@@ -94,7 +94,7 @@ class Point {
   }
 
   @override
-  int get hashCode => super.hashCode;
+  int get hashCode => Object.hash(x, y);
 
   Point copyWith({
     int? x,

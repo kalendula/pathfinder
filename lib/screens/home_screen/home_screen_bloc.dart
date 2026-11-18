@@ -43,6 +43,7 @@ class HomeScreenBloc {
       data = res;
       _screenStateSubject.add(ScreenState.counting(0));
       _counting();
+      _screenStateSubject.add(ScreenState.success());
     } else {
       _screenStateSubject.add(ScreenState.error('URL is not valid'));
     }
@@ -101,7 +102,6 @@ class HomeScreenBloc {
           .addResult(Result(id: req.id, field: field, start: req.start, end: req.end, path: res));
       progress += percent;
       _updateProgress(progress);
-      _screenStateSubject.add(ScreenState.success());
     }
   }
 

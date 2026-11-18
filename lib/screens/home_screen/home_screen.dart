@@ -8,9 +8,6 @@ import 'package:pathfinder/screens/home_screen/widgets/url_widget.dart';
 
 import 'widgets/error_widget.dart';
 
-final URLRegexp =
-    RegExp(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+~#?&//=]*)');
-
 class HomePage extends StatefulWidget {
   HomePage({Key? key}) : super(key: key);
 
