@@ -16,7 +16,10 @@ class ApiManagerImpl implements ApiManager {
   @override
   Future<DataModel> getData() async {
     String url = GetIt.I.get<ApiUrlService>().getUrl();
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(
+      Uri.parse(url),
+      headers: {'Content-type': 'application/json'},
+    );
     try {
       if (response.statusCode == 200) {
         return DataModel.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
@@ -35,9 +38,11 @@ class ApiManagerImpl implements ApiManager {
       data.add(ResultItem.fromResult(res));
     }
     String url = GetIt.I.get<ApiUrlService>().getUrl();
+    final body = jsonEncode(data.map((e) => e.toJson()).toList());
     final response = await http.post(
       Uri.parse(url),
-      body: jsonEncode(data.map((e) => e.toJson()).toList()),
+      body: body,
+      headers: {'Content-type': 'application/json'},
     );
     try {
       if (response.statusCode == 200) {

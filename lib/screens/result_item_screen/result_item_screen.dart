@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pathfinder/services/results_service.dart';
+import 'package:pathfinder/utils/pathfinder.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
 class ResultItemScreen extends StatelessWidget {
@@ -55,6 +56,7 @@ class ResultItemScreen extends StatelessWidget {
   }
 
   Color getCellColor(int x, int y) {
+    if (!coordExists(result.field, x, y)) return const Color(0xFFFFFFFF);
     if (result.start.x == x && result.start.y == y) return const Color(0xFF64FFDA);
     if (result.end.x == x && result.end.y == y) return const Color(0xFF009688);
     if (result.field[y][x] == 0) return const Color(0xFF000000);
