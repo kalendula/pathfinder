@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
               switch (data.type) {
                 case ScreenStateEnum.start:
                   return UrlWidget(
+                    isLoading: _bloc.loadingStream,
                     controller: _controller,
                     onPress: () => _bloc.startCounting(_controller.text),
                   );
@@ -64,6 +65,7 @@ class _HomePageState extends State<HomePage> {
                   return CountingWidget(progress: data.progress);
                 case ScreenStateEnum.success:
                   return SuccessWidget(
+                    isLoading: _bloc.loadingStream,
                     onPress: () => _bloc.sendResult(),
                   );
                 case ScreenStateEnum.error:

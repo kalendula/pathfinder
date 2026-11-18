@@ -6,7 +6,6 @@ import 'package:pathfinder/network/models/data_model.dart';
 import 'package:pathfinder/network/models/response_model.dart';
 import 'package:pathfinder/services/api_url_service.dart';
 import 'package:pathfinder/services/results_service.dart';
-import 'package:pathfinder/utils/test_data.dart';
 
 abstract class ApiManager {
   Future<DataModel> sendData(List<Result> result);
@@ -17,7 +16,6 @@ class ApiManagerImpl implements ApiManager {
   @override
   Future<DataModel> getData() async {
     String url = GetIt.I.get<ApiUrlService>().getUrl();
-    return DataModel.fromJson(jsonDecode(testGetData) as Map<String, dynamic>);
     final response = await http.get(Uri.parse(url));
     try {
       if (response.statusCode == 200) {
@@ -37,7 +35,6 @@ class ApiManagerImpl implements ApiManager {
       data.add(ResultItem.fromResult(res));
     }
     String url = GetIt.I.get<ApiUrlService>().getUrl();
-    return DataModel(data: [], error: false, message: "");
     final response = await http.post(
       Uri.parse(url),
       body: jsonEncode(data.map((e) => e.toJson()).toList()),

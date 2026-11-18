@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class SuccessWidget extends StatelessWidget {
+  final Stream<bool> isLoading;
   final VoidCallback onPress;
-  const SuccessWidget({Key? key, required this.onPress}) : super(key: key);
+  const SuccessWidget({Key? key, required this.onPress, required this.isLoading}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,20 +39,29 @@ class SuccessWidget extends StatelessWidget {
             ),
           ],
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.blue,
-            shape: RoundedRectangleBorder(
-              side: const BorderSide(width: 2, color: Colors.blueAccent),
-              borderRadius: BorderRadius.circular(10),
+        StreamBuilder<bool>(
+          stream: isLoading,
+          builder: (context, snapshot) => ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.black,
+              backgroundColor: Colors.blue,
+              shape: RoundedRectangleBorder(
+                side: const BorderSide(width: 2, color: Colors.blueAccent),
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-          ),
-          onPressed: onPress,
-          child: Container(
-            height: 50,
-            alignment: Alignment.center,
-            child: Text('Send result to server'),
+            onPressed: snapshot.data ?? false ? null : onPress,
+            child: snapshot.data ?? false
+                ? Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    child: CircularProgressIndicator(),
+                  )
+                : Container(
+                    height: 50,
+                    alignment: Alignment.center,
+                    child: Text('Send result to server'),
+                  ),
           ),
         ),
       ],

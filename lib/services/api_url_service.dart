@@ -1,5 +1,5 @@
 class ApiUrlService {
-  String _apiUrl = 'http://www.example.com';
+  String _apiUrl = '';
   static final ApiUrlService _singleton = ApiUrlService._internal();
 
   String getUrl() {

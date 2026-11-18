@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:pathfinder/injector/usecases/get_data_usecase.dart';
+import 'package:pathfinder/injector/usecases/send_data_usecase.dart';
 import 'package:pathfinder/network/models/data_model.dart';
 import 'package:pathfinder/services/api_url_service.dart';
 import 'package:pathfinder/services/results_service.dart';
@@ -10,11 +11,13 @@ final URLRegexp =
     RegExp(r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+~#?&//=]*)');
 
 class HomeScreenBloc {
-  bool inProgress = false;
+  bool isLoading = false;
   DataModel? data = null;
   final _screenStateSubject = BehaviorSubject<ScreenState>();
+  final _loadingSubject = BehaviorSubject<bool>();
 
   Stream<ScreenState> get screenStateStream => _screenStateSubject.stream;
+  Stream<bool> get loadingStream => _loadingSubject.stream;
 
   HomeScreenBloc() {
     resetScreen();
@@ -27,14 +30,14 @@ class HomeScreenBloc {
   }
 
   void startCounting(String url) async {
-    if (inProgress) return;
-    inProgress = true;
+    if (isLoading) return;
+    setIsLoading(true);
     if (URLRegexp.hasMatch(url)) {
       GetIt.I.get<ApiUrlService>().setUrl(url);
       final res = await GetIt.I.get<GetDataUsecase>().execute();
       if (res.error) {
         _screenStateSubject.add(ScreenState.error(res.message));
-        inProgress = false;
+        setIsLoading(false);
         return;
       }
       data = res;
@@ -43,12 +46,12 @@ class HomeScreenBloc {
     } else {
       _screenStateSubject.add(ScreenState.error('URL is not valid'));
     }
-    inProgress = false;
+    setIsLoading(false);
   }
 
-  void sendResult() {
-    if (inProgress) return;
-    inProgress = true;
+  void sendResult() async {
+    if (isLoading) return;
+    setIsLoading(true);
     if (data == null) {
       _screenStateSubject.add(ScreenState.error('Something went wrong'));
       return;
@@ -62,7 +65,13 @@ class HomeScreenBloc {
         request.add(Result(end: res.end, start: res.start, id: res.id, field: [], path: []));
       }
     }
-    inProgress = false;
+    final res = await GetIt.I.get<SendDataUsecase>().execute(request);
+    if (res.error) {
+      _screenStateSubject.add(ScreenState.error('Error while sending data: ' + res.message));
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(false);
     resetScreen();
   }
 
@@ -78,7 +87,7 @@ class HomeScreenBloc {
     for (final req in safeData.data) {
       List<List<int>> field = [];
       for (final row in req.field) {
-        final parsedRow = row.split(' ');
+        final parsedRow = row.split('');
         final convRow = <int>[];
         for (final char in parsedRow) {
           if (char == '.') convRow.add(1);
@@ -100,7 +109,13 @@ class HomeScreenBloc {
     _screenStateSubject.add(ScreenState.counting(progress));
   }
 
+  void setIsLoading(bool loading) {
+    isLoading = loading;
+    _loadingSubject.add(isLoading);
+  }
+
   void dispose() {
+    _loadingSubject.close();
     _screenStateSubject.close();
   }
 }
