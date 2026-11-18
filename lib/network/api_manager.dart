@@ -16,18 +16,18 @@ class ApiManagerImpl implements ApiManager {
   @override
   Future<DataModel> getData() async {
     String url = GetIt.I.get<ApiUrlService>().getUrl();
-    final response = await http.get(
-      Uri.parse(url),
-      headers: {'Content-type': 'application/json'},
-    );
     try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Content-type': 'application/json'},
+      );
       if (response.statusCode == 200) {
         return DataModel.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
       } else {
         return DataModel(data: [], error: true, message: "Error ${response.statusCode}: ${response.body}");
       }
     } catch (e) {
-      return DataModel(data: [], error: true, message: "Error while trying to map response from server");
+      return DataModel(data: [], error: true, message: "Error while trying to get response from the server");
     }
   }
 
@@ -39,19 +39,19 @@ class ApiManagerImpl implements ApiManager {
     }
     String url = GetIt.I.get<ApiUrlService>().getUrl();
     final body = jsonEncode(data.map((e) => e.toJson()).toList());
-    final response = await http.post(
-      Uri.parse(url),
-      body: body,
-      headers: {'Content-type': 'application/json'},
-    );
     try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: body,
+        headers: {'Content-type': 'application/json'},
+      );
       if (response.statusCode == 200) {
         return DataModel(data: [], error: false, message: "");
       } else {
         return DataModel(data: [], error: true, message: "Error ${response.statusCode}: ${response.body}");
       }
     } catch (e) {
-      return DataModel(data: [], error: true, message: "Error while trying to map response from server");
+      return DataModel(data: [], error: true, message: "Error while trying to get answer frpm the server");
     }
   }
 }
